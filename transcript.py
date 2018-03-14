@@ -39,10 +39,13 @@ def transcript(line, trn_fp):
 def text_split(args):
     count = 0
     with open(args.text, encoding="gb2312") as f:
-        for line in f.readlines():
-            if (line != '\n'):
-                print(line.encode())
-                txt_file = os.path.join(args.output_dir, args.name + "_%03d" % count + ".txt")
+        for l in f.readlines():
+            line = l.strip(' ').strip('\n')
+            if (line != ''):
+                print(line)
+                names = args.output_dir.split('/')
+                name = names[-2] if names[-1] == '' else names[-1]
+                txt_file = os.path.join(args.output_dir, name + "_%03d" % count + ".txt")
                 count += 1
                 with open(txt_file, mode='w', encoding='utf-8') as txt_fp:
                     txt_fp.write(line)
@@ -54,7 +57,6 @@ def text_split(args):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--text", default='text.txt')
-    parser.add_argument("--name")
     parser.add_argument("--output_dir", default='.')
     args = parser.parse_args()
 
