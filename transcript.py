@@ -8,9 +8,9 @@ def transcript(line, trn_fp):
     #for line in in_fp.readlines():
     pys = pinyin(line, style=Style.TONE3)
     for i in range(len(pys)):
-        if pys[i][0][0] == "，" or pys[i][0][0] == "、":
+        if pys[i][0][0] == "，" or pys[i][0][0] == "、" or pys[i][0][0] == '―':
             pys[i][0] = ','
-        elif pys[i][0][0] == '。':
+        elif pys[i][0][0] == '。' or pys[i][0][0] == "…":
             pys[i][0] = '.'
         elif pys[i][0][0] == "；":
             pys[i][0] = ';'
@@ -20,8 +20,6 @@ def transcript(line, trn_fp):
             pys[i][0] = '?'
         elif pys[i][0][0] == "！":
             pys[i][0] = '!'
-        elif pys[i][0][0] == "…":
-            continue
         elif pys[i][0][0] == "《" or pys[i][0][0] == '》' or pys[i][0][0] == '（' or pys[i][0][0] == '）':
             continue
         elif pys[i][0][0] == '“' or pys[i][0][0] == '”' or pys[i][0][0] == '‘' or pys[i][0][0] == '’':
@@ -38,9 +36,9 @@ def transcript(line, trn_fp):
 
 def text_split(args):
     count = 0
-    with open(args.text, encoding="gb2312") as f:
+    with open(args.text, encoding="gbk") as f:
         for l in f.readlines():
-            line = l.strip(' ').strip('\n')
+            line = l.strip(' ').strip('\n').strip('\t')
             if (line != ''):
                 print(line)
                 names = args.output_dir.split('/')
@@ -53,6 +51,17 @@ def text_split(args):
                     with open(trn_file, 'w') as trn_fp:
                         transcript(line, trn_fp)
                     
+def text_split2(args):
+    for root, dirs, files in os.walk(args.output_dir):
+        for f in files:
+            if (f.endswith(".txt")):
+                txt_file = os.path.join(root, f)
+                with open(txt_file, mode='r') as txt_fp:
+                    line = txt_fp.readline()
+                    trn_file = txt_file[:-4] + '.trn'
+                    with open(trn_file, 'w') as trn_fp:
+                        transcript(line, trn_fp)
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -61,6 +70,7 @@ def main():
     args = parser.parse_args()
 
     text_split(args)
+
 
 if __name__ == '__main__':
     main()
